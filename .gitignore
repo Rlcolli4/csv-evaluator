@@ -1,5 +1,6 @@
 # Dependencies (npm install, yarn, pnpm)
 node_modules/
+package-lock.json
 
 # Build output (npm run build / tsc)
 dist/

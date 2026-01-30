@@ -2,12 +2,20 @@
   "name": "csv-evaluator",
   "version": "0.1.0",
   "description": "A library to validate Excel and CSV files before uploading to a server, checking headers and SQL-injection risks",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
-    "test": "node dist/example.js",
-    "serve": "npx serve ."
+    "serve": "npx serve .",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "csv",
@@ -17,8 +25,19 @@
     "sql-injection",
     "parser"
   ],
-  "author": "",
+  "author": "Robert L Collins Jr",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rlcolli4/csv-evaluator.git"
+  },
+  "homepage": "https://github.com/Rlcolli4/csv-evaluator#readme",
+  "bugs": {
+    "url": "https://github.com/Rlcolli4/csv-evaluator/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "xlsx": "^0.18.5",
     "papaparse": "^5.4.1"

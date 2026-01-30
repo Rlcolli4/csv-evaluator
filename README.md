@@ -2,6 +2,23 @@
 
 A TypeScript library for validating Excel and CSV files before uploading to a server. The library checks file headers against defined criteria and validates data rows for potentially dangerous SQL characters that could cause database injection attacks.
 
+**npm:** [csv-evaluator](https://www.npmjs.com/package/csv-evaluator) · **GitHub:** [Repository](https://github.com/your-username/csv-evaluator)
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Examples](#examples)
+- [SQL Injection Detection](#sql-injection-detection)
+- [Advanced Usage](#advanced-usage)
+- [Browser Compatibility](#browser-compatibility)
+- [Development](#development)
+- [License](#license)
+- [Contributing](#contributing)
+- [Support](#support)
+
 ## Features
 
 - ✅ **Multi-format Support**: Handles CSV, XLSX, XLS, and XLSM files
@@ -98,6 +115,7 @@ if (file) {
 interface ValidationConfig {
   headers: HeaderConfig;
   validateSqlInjection?: boolean; // Default: true
+  encoding?: EncodingConfig;      // Optional: restrict allowed character encodings
 }
 ```
 
@@ -108,6 +126,28 @@ interface HeaderConfig {
   expectedHeaders: string[];      // Required: Array of expected header names
   strictOrder?: boolean;          // Default: true - Headers must match order exactly
   caseInsensitive?: boolean;      // Default: false - Case-sensitive matching
+  columnSchemas?: ColumnSchemas;  // Optional: type and nullability per column
+}
+```
+
+### EncodingConfig (optional)
+
+Restrict which character encodings are allowed (e.g. `UTF8`, `LATIN1`, `ASCII`, `UTF16`, `WINDOWS1252`):
+
+```typescript
+encoding: {
+  allowedEncodings: ['UTF8', 'LATIN1']
+}
+```
+
+### ColumnSchemas (optional)
+
+Enforce column types and nullability. Keys must be header names from `expectedHeaders`:
+
+```typescript
+columnSchemas: {
+  'Age': { type: 'number', allowNull: false },
+  'Name': { type: 'string', allowNull: false }
 }
 ```
 
@@ -213,22 +253,6 @@ const data = await parseFile(file);
 // data is string[][], where data[0] is headers
 ```
 
-## Building from Source
-
-```bash
-# Install dependencies
-npm install
-
-# Build the library
-npm run build
-
-# Run for testing
-npm run serve
-```
-
-## Access the Test Index
-Open a browser and go to http://localhost:3000
-
 ## Browser Compatibility
 
 This library uses modern JavaScript features and requires:
@@ -238,6 +262,23 @@ This library uses modern JavaScript features and requires:
 - For Excel files: FileReader API support
 
 For older browsers, you may need to use a bundler with polyfills.
+
+## Development
+
+To build and run the project locally:
+
+```bash
+# Install dependencies
+npm install
+
+# Build the library
+npm run build
+
+# Serve for local testing
+npm run serve
+```
+
+Then open a browser at http://localhost:3000 to access the test index.
 
 ## License
 
