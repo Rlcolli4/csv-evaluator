@@ -14,9 +14,36 @@
   },
   "scripts": {
     "build": "tsc",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "serve": "npx serve .",
     "prepublishOnly": "npm run build",
     "prepublishValidate": "npm pack --dry-run"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/src"],
+    "maxWorkers": 1,
+    "testMatch": ["**/*.test.ts"],
+    "moduleNameMapper": {
+      "^(.*)\\.js$": "$1"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.test.ts",
+      "!src/types.ts"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov"],
+    "coverageThreshold": {
+      "global": {
+        "branches": 75,
+        "functions": 75,
+        "lines": 75,
+        "statements": 75
+      }
+    }
   },
   "keywords": [
     "csv",
@@ -40,12 +67,15 @@
     "node": ">=18"
   },
   "dependencies": {
-    "xlsx": "^0.18.5",
-    "papaparse": "^5.4.1"
+    "papaparse": "^5.4.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.10.0",
     "@types/papaparse": "^5.3.14",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.3.3"
   },
   "files": [
