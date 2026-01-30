@@ -1,0 +1,34 @@
+{
+  "name": "csv-evaluator",
+  "version": "0.1.0",
+  "description": "A library to validate Excel and CSV files before uploading to a server, checking headers and SQL-injection risks",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "node dist/example.js",
+    "serve": "npx serve ."
+  },
+  "keywords": [
+    "csv",
+    "excel",
+    "validation",
+    "file-upload",
+    "sql-injection",
+    "parser"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "xlsx": "^0.18.5",
+    "papaparse": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/papaparse": "^5.3.14",
+    "typescript": "^5.3.3"
+  },
+  "files": [
+    "dist/**/*"
+  ]
+}

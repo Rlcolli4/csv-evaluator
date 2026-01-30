@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV Evaluator - File Validation Test</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 900px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 0.95em;
+    }
+
+    .config-section {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-left: 4px solid #667eea;
+    }
+
+    .config-section h2 {
+      color: #333;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      color: #555;
+      font-weight: 500;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+    }
+
+    input[type="text"],
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="file"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    input[type="text"] {
+      font-family: monospace;
+    }
+
+    textarea.column-schemas {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: monospace;
+      resize: vertical;
+      transition: border-color 0.3s;
+    }
+
+    textarea.column-schemas:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .file-input-label {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-weight: 500;
+    }
+
+    .file-input-label:hover {
+      background: #5568d3;
+    }
+
+    input[type="file"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .file-name {
+      color: #333;
+      font-size: 0.95em;
+      font-weight: 500;
+    }
+
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #result {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .success {
+      background: #d4edda;
+      border: 2px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .error {
+      background: #f8d7da;
+      border: 2px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .result-header {
+      font-size: 1.1em;
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .result-header::before {
+      content: '';
+      width: 24px;
+      height: 24px;
+      display: inline-block;
+    }
+
+    .success .result-header::before {
+      content: '✅';
+    }
+
+    .error .result-header::before {
+      content: '❌';
+    }
+
+    .failure-list {
+      margin-top: 15px;
+    }
+
+    .failure-item {
+      margin: 10px 0;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      border-left: 3px solid #dc3545;
+    }
+
+    .failure-item strong {
+      color: #721c24;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+      color: #667eea;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .help-text {
+      font-size: 0.85em;
+      color: #888;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="serverWarning"
+      style="display: none; background: #fff3cd; border: 2px solid #ffc107; border-radius: 6px; padding: 20px; margin-bottom: 20px; color: #856404;">
+      <strong style="font-size: 1.1em;">⚠️ CORS Error - HTTP Server Required</strong>
+      <p style="margin: 10px 0 0 0;">This page cannot work when opened directly from the file system due to browser
+        security restrictions.</p>
+      <p style="margin: 10px 0;"><strong>Solution:</strong> Run this command in your terminal:</p>
+      <code
+        style="display: block; background: #f8f9fa; padding: 10px; border-radius: 4px; margin: 10px 0; font-size: 0.9em;">npm run serve</code>
+      <p style="margin: 10px 0 0 0;">Then open the URL shown in the terminal (usually
+        <code>http://localhost:3000/index.html</code>)
+      </p>
+    </div>
+    <h1>CSV Evaluator</h1>
+    <p class="subtitle">Validate CSV and Excel files with header checking and SQL injection protection</p>
+
+    <div class="config-section">
+      <h2>Configuration</h2>
+
+      <div class="form-group">
+        <label for="expectedHeaders">Expected Headers (comma-separated):</label>
+        <input type="text" id="expectedHeaders" value="ID,NAME,NAMEALT,ADDRESS,ADDRESS2,CITY,STATE,ZIP,ZIP4,PHONE,X,Y"
+          placeholder="ID,NAME,NAMEALT,ADDRESS,ADDRESS2,CITY,STATE,ZIP,ZIP4,PHONE,X,Y">
+        <div class="help-text">Enter the expected column headers separated by commas</div>
+      </div>
+
+      <div class="form-group">
+        <label for="columnSchemas">Column Schemas (optional JSON):</label>
+        <textarea id="columnSchemas" class="column-schemas"
+          placeholder='{"X": {"type": "number"}, "Y": {"type": "number"}, "ZIP": {"type": "string", "allowNull": false}}'>{"X": {"type": "number"}, "Y": {"type": "number"}, "ZIP": {"type": "string", "allowNull": false}}</textarea>
+        <div class="help-text">Valid JSON object mapping header names to constraints. Keys must be from expected
+          headers. Each value can have "type" ("string" | "number" | "boolean") and "allowNull" (boolean). Leave empty
+          to skip column schema validation.</div>
+      </div>
+
+      <div class="form-group">
+        <div class="checkbox-group">
+          <input type="checkbox" id="strictOrder" checked>
+          <label for="strictOrder">Strict Order (headers must match exact order)</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="checkbox-group">
+          <input type="checkbox" id="caseInsensitive">
+          <label for="caseInsensitive">Case Insensitive (headers can be any case)</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="checkbox-group">
+          <input type="checkbox" id="validateSqlInjection" checked>
+          <label for="validateSqlInjection">Validate SQL Injection Risks</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Allowed Character Encodings:</label>
+        <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+          <div class="checkbox-group">
+            <input type="checkbox" id="encodingUTF8" checked>
+            <label for="encodingUTF8">UTF-8 (ASCII only, 0-127)</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="encodingLATIN1">
+            <label for="encodingLATIN1">LATIN1 (ISO-8859-1)</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="encodingASCII">
+            <label for="encodingASCII">ASCII</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="encodingUTF16">
+            <label for="encodingUTF16">UTF-16</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="encodingWINDOWS1252">
+            <label for="encodingWINDOWS1252">Windows-1252</label>
+          </div>
+        </div>
+        <div class="help-text">Select one or more allowed character encodings. Characters outside these encodings will
+          be flagged. Note: UTF-8 and UTF-16 are restricted to ASCII range (0-127) for database compatibility.</div>
+      </div>
+    </div>
+
+    <div class="file-input-wrapper">
+      <label for="fileInput" class="file-input-label">Choose File</label>
+      <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.xlsm">
+      <div class="file-name" id="fileName"></div>
+    </div>
+
+    <button id="validateBtn" onclick="validateFile()">Validate File</button>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div>Validating file...</div>
+    </div>
+
+    <div id="result"></div>
+  </div>
+
+  <!-- Import map to resolve npm packages from CDN -->
+  <script type="importmap">
+    {
+      "imports": {
+        "xlsx": "https://esm.sh/xlsx@0.18.5",
+        "papaparse": "https://esm.sh/papaparse@5.4.1"
+      }
+    }
+  </script>
+
+  <script>
+    // Check if page is being served via file:// protocol BEFORE attempting ES module import
+    if (window.location.protocol === 'file:') {
+      const warning = document.getElementById('serverWarning');
+      const validateBtn = document.getElementById('validateBtn');
+
+      if (warning) {
+        warning.style.display = 'block';
+      }
+      if (validateBtn) {
+        validateBtn.disabled = true;
+        validateBtn.textContent = '❌ Please use HTTP server (see warning above)';
+        validateBtn.style.background = '#dc3545';
+      }
+
+      // Prevent the module script from running
+      console.error('❌ CORS Error: This page must be served via HTTP. Run "npm run serve" and open the provided URL.');
+    }
+  </script>
+
+  <script type="module">
+    // NOTE: This file must be served via HTTP (not file://) to work due to ES module CORS restrictions.
+    // Run a local server using one of these commands:
+    //   npm run serve
+    //   npx serve .
+    //   python -m http.server 8000
+    //   php -S localhost:8000
+    // Then open http://localhost:8000/index.html in your browser
+
+    import { validateFile } from './dist/index.js';
+
+    // Make validateFile available globally
+    window.validateFile = async function () {
+      const fileInput = document.getElementById('fileInput');
+      const resultDiv = document.getElementById('result');
+      const loadingDiv = document.getElementById('loading');
+      const validateBtn = document.getElementById('validateBtn');
+      const fileNameDiv = document.getElementById('fileName');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select a file first');
+        return;
+      }
+
+      const file = fileInput.files[0];
+
+      // Get configuration from form
+      const expectedHeadersStr = document.getElementById('expectedHeaders').value;
+      const expectedHeaders = expectedHeadersStr
+        .split(',')
+        .map(h => h.trim())
+        .filter(h => h.length > 0);
+
+      if (expectedHeaders.length === 0) {
+        alert('Please enter at least one expected header');
+        return;
+      }
+
+      let columnSchemas = undefined;
+      const columnSchemasStr = document.getElementById('columnSchemas').value.trim();
+      if (columnSchemasStr.length > 0) {
+        try {
+          const parsed = JSON.parse(columnSchemasStr);
+          if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+            alert('Column Schemas must be a JSON object (e.g. {"HeaderName": {"type": "number"}})');
+            return;
+          }
+          columnSchemas = parsed;
+        } catch (e) {
+          alert('Invalid Column Schemas JSON: ' + (e instanceof Error ? e.message : String(e)));
+          return;
+        }
+      }
+
+      // Get selected encodings
+      const selectedEncodings = [];
+      if (document.getElementById('encodingUTF8').checked) selectedEncodings.push('UTF8');
+      if (document.getElementById('encodingLATIN1').checked) selectedEncodings.push('LATIN1');
+      if (document.getElementById('encodingASCII').checked) selectedEncodings.push('ASCII');
+      if (document.getElementById('encodingUTF16').checked) selectedEncodings.push('UTF16');
+      if (document.getElementById('encodingWINDOWS1252').checked) selectedEncodings.push('WINDOWS1252');
+
+      const config = {
+        headers: {
+          expectedHeaders: expectedHeaders,
+          strictOrder: document.getElementById('strictOrder').checked,
+          caseInsensitive: document.getElementById('caseInsensitive').checked,
+          ...(columnSchemas && { columnSchemas })
+        },
+        validateSqlInjection: document.getElementById('validateSqlInjection').checked,
+        encoding: selectedEncodings.length > 0 ? {
+          allowedEncodings: selectedEncodings
+        } : undefined
+      };
+
+      // Show loading state
+      loadingDiv.style.display = 'block';
+      resultDiv.style.display = 'none';
+      validateBtn.disabled = true;
+
+      try {
+        const result = await validateFile(file, config);
+
+        // Hide loading
+        loadingDiv.style.display = 'none';
+        validateBtn.disabled = false;
+
+        // Display result
+        resultDiv.style.display = 'block';
+        resultDiv.className = result.success ? 'success' : 'error';
+
+        let html = `<div class="result-header">${result.message}</div>`;
+
+        if (!result.success && result.failures && result.failures.length > 0) {
+          html += '<div class="failure-list">';
+          result.failures.forEach((failure, index) => {
+            html += `
+                            <div class="failure-item">
+                                <strong>Issue ${index + 1}:</strong><br>
+                                Column: ${failure.column}<br>
+                                Line: ${failure.line}<br>
+                                Reason: ${failure.reason}
+                            </div>
+                        `;
+          });
+          html += '</div>';
+        }
+
+        resultDiv.innerHTML = html;
+      } catch (error) {
+        loadingDiv.style.display = 'none';
+        validateBtn.disabled = false;
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'error';
+        resultDiv.innerHTML = `
+                    <div class="result-header">Error</div>
+                    <p>An error occurred: ${error.message}</p>
+                `;
+      }
+    };
+
+    // Update file name display
+    document.getElementById('fileInput').addEventListener('change', function (e) {
+      const fileNameDiv = document.getElementById('fileName');
+      if (e.target.files && e.target.files.length > 0) {
+        fileNameDiv.textContent = e.target.files[0].name;
+      } else {
+        fileNameDiv.textContent = '';
+      }
+    });
+
+    // Warning is already shown by the script tag above if file:// is detected
+  </script>
+</body>
+
+</html>
