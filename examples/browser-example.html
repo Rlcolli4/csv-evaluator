@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV/Excel File Validator Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .failure-list {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        .failure-item {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CSV/Excel File Validator</h1>
+        <p>This example validates a file with headers: Name, Email, Age</p>
+        
+        <label for="fileInput">Select a CSV or Excel file:</label>
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.xlsm">
+        
+        <button onclick="validateFile()">Validate File</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <!-- Include the library (you would build this first and include the dist file) -->
+    <!-- For this example, you would use a bundler or include the built files -->
+    <script type="module">
+        // This is a placeholder - in a real scenario, you would import from the built library
+        // import { validateFile } from '../dist/index.js';
+        
+        // For this HTML example, you would need to bundle the library for browser use
+        // or use a CDN version if published
+    </script>
+    
+    <script>
+        // Example configuration
+        const config = {
+            headers: {
+                expectedHeaders: ['Name', 'Email', 'Age'],
+                strictOrder: true,
+                caseInsensitive: false
+            },
+            validateSqlInjection: true
+        };
+
+        async function validateFile() {
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('result');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Please select a file first');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            
+            // Note: In a real implementation, you would import and use the library here
+            // For now, this is just a UI example
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'success';
+            resultDiv.innerHTML = '<p>Please import the library and use: validateFile(file, config)</p>';
+        }
+    </script>
+</body>
+</html>
